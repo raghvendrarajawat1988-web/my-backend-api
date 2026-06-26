@@ -50,6 +50,52 @@ app.post("/users", async (req, res) => {
 });
 
 // ============================
+// ROUTE 3 — किसी user को update करना
+// ============================
+app.put("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, job } = req.body;
+    const { ObjectId } = require("mongodb");
+
+    const result = await db.collection("users").updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { name, job } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "User नहीं मिला" });
+    }
+
+    res.status(200).json({ message: "User update हो गया" });
+  } catch (error) {
+    res.status(500).json({ error: "कुछ गलत हो गया" });
+  }
+});
+
+// ============================
+// ROUTE 4 — किसी user को delete करना
+// ============================
+app.delete("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { ObjectId } = require("mongodb");
+
+    const result = await db.collection("users").deleteOne({
+      _id: new ObjectId(id)
+    });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "User नहीं मिला" });
+    }
+
+    res.status(200).json({ message: "User delete हो गया" });
+  } catch (error) {
+    res.status(500).json({ error: "कुछ गलत हो गया" });
+  }
+});
+
+// ============================
 // Server शुरू करना — पहले DB connect हो, फिर server चले
 // ============================
 const PORT = 5000;
